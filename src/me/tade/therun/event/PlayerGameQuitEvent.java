@@ -19,16 +19,16 @@ public class PlayerGameQuitEvent extends Event {
         this.game = game;
     }
 
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
     public Player getPlayer() {
         return player;
     }
 
     public Game getGame() {
         return game;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 
     @Override

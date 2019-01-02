@@ -2,7 +2,6 @@ package me.tade.therun.event;
 
 import me.tade.therun.game.Game;
 import me.tade.therun.game.GameState;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -20,16 +19,16 @@ public class GameStateChangeEvent extends Event {
         this.gameState = gameState;
     }
 
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
     public Game getGame() {
         return game;
     }
 
     public GameState getGameState() {
         return gameState;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 
     @Override

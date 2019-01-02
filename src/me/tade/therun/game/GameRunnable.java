@@ -1,9 +1,5 @@
 package me.tade.therun.game;
 
-import me.tade.therun.event.GameStateChangeEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
@@ -26,34 +22,28 @@ public class GameRunnable extends BukkitRunnable {
     @Override
     public void run() {
         //Main stuff for game (countdown)
-        if (game.getGameState() == GameState.LOBBY){
-            if(game.getPlugin().getPlayersFromGame(game).size() >= game.getMinPlayers()){
+        if (game.getGameState() == GameState.LOBBY) {
+            if (game.getPlugin().getPlayersFromGame(game).size() >= game.getMinPlayers()) {
 
             }
-        }else if(game.getGameState() == GameState.STARTING){
-            if(System.currentTimeMillis() - lastCounted >= 1000) {
+        } else if (game.getGameState() == GameState.STARTING) {
+            if (System.currentTimeMillis() - lastCounted >= 1000) {
                 lastCounted = System.currentTimeMillis();
                 countdown--;
             }
 
-            if(countdown <= 0){
+            if (countdown <= 0) {
                 prepareToStartGame();
-
-                game.startGame();
 
                 this.countdown = this.game.getCountdown();
             }
-        }else if (game.getGameState() == GameState.PLAYING){
-            if(System.currentTimeMillis() >= endTime){
+        } else if (game.getGameState() == GameState.PLAYING) {
+            if (System.currentTimeMillis() >= endTime) {
                 prepareToEndGame();
-
-                game.endGame();
             }
-        }else if (game.getGameState() == GameState.ENDING){
-            if(System.currentTimeMillis() >= (game.getGameEndTime() + 10000)){ //Wait 10 seconds and restart the game
+        } else if (game.getGameState() == GameState.ENDING) {
+            if (System.currentTimeMillis() >= (game.getGameEndTime() + 10000)) { //Wait 10 seconds and restart the game
                 prepareToRestartGame();
-
-                game.restartGame();
             }
         }
 
@@ -61,33 +51,41 @@ public class GameRunnable extends BukkitRunnable {
         game.onTick();
     }
 
-    private void prepareToStartGame(){
-        game.setGameState(GameState.PLAYING);
-
-        endTime = System.currentTimeMillis() + 1200000; //End time = 20 minutes
+    private void prepareToStartGame() {
+        endTime = System.currentTimeMillis() + 1800000; //End time = 30 minutes
 
         game.setGameStartTime(System.currentTimeMillis());
+
+        game.setGameState(GameState.PLAYING);
+
+        game.startGame();
     }
 
-    private void prepareToEndGame(){
-        game.setGameState(GameState.ENDING);
-
+    private void prepareToEndGame() {
         endTime = 0;
 
         game.setGameEndTime(System.currentTimeMillis());
+
+        game.setGameState(GameState.ENDING);
+
+        game.endGame();
     }
 
-    private void prepareToRestartGame(){
+    public void prepareToRestartGame() {
+        game.setGameEndTime(0);
+
+        game.setForceStart(false);
+
         game.setGameState(GameState.RESTARTING);
 
-        game.setGameEndTime(0);
-    }
-
-    public void setCountdown(int countdown) {
-        this.countdown = countdown;
+        game.restartGame();
     }
 
     public int getCountdown() {
         return countdown;
+    }
+
+    public void setCountdown(int countdown) {
+        this.countdown = countdown;
     }
 }

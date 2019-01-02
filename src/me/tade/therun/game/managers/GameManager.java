@@ -22,45 +22,49 @@ public class GameManager implements Listener {
     }
 
     @EventHandler
-    public void onGameJoin(PlayerGameJoinEvent event){
-        if(event.getGame() != game)
+    public void onGameJoin(PlayerGameJoinEvent event) {
+        if (event.getGame() != game)
             return;
 
         //Disallow join to playing game
-        if(game.getGameState() == GameState.PLAYING || game.getGameState() == GameState.ENDING || game.getGameState() == GameState.RESTARTING) {
+        if (game.getGameState() == GameState.PLAYING || game.getGameState() == GameState.ENDING || game.getGameState() == GameState.RESTARTING) {
             event.setCancelled(true);
             return;
         }
 
         //Disallow to join full arena
-        if(game.getPlugin().getPlayersFromGame(game).size() >= game.getMaxPlayers()){
+        if (game.getPlugin().getPlayersFromGame(game).size() >= game.getMaxPlayers()) {
             event.setCancelled(true);
             return;
         }
 
-        if(game.getPlugin().getPlayersFromGame(game).size() >= game.getMinPlayers()){
+        if (game.getPlugin().getPlayersFromGame(game).size() >= game.getMinPlayers()) {
             //Start timer
-            if(game.getGameState() == GameState.LOBBY){
+            if (game.getGameState() == GameState.LOBBY) {
                 game.setGameState(GameState.STARTING);
             }
 
             //Short countdown when game is full
-            if(game.getMaxPlayers() - game.getPlugin().getPlayersFromGame(game).size() <= 1)
+            if (game.getMaxPlayers() - game.getPlugin().getPlayersFromGame(game).size() <= 1)
                 game.shortCountdown(10);
         }
     }
 
     @EventHandler
-    public void onGameQuit(PlayerGameQuitEvent event){
-        if(event.getGame() != game)
+    public void onGameQuit(PlayerGameQuitEvent event) {
+        if (event.getGame() != game)
             return;
 
-        if(game.getPlugin().getPlayersFromGame(game).size() < game.getMinPlayers()){
+        if (game.getPlugin().getPlayersFromGame(game).size() < game.getMinPlayers()) {
             //Stop timer
-            if(game.getGameState() == GameState.STARTING){
+            if ((game.getPlugin().getPlayersFromGame(game).size() <= 1 || !game.isForceStart()) && game.getGameState() == GameState.STARTING) {
                 game.setGameState(GameState.LOBBY);
 
                 game.setCountdown(game.getCountdown());
+            }
+
+            if (game.getPlugin().getPlayersFromGame(game).size() <= 1 && game.getGameState() == GameState.PLAYING) {
+                game.emergencyRestartGame();
             }
         }
     }

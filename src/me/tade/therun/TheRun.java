@@ -20,13 +20,21 @@ public class TheRun extends JavaPlugin {
     private List<Game> games = new ArrayList<>();
 
     @Override
-    public void onEnable(){
+    public void onEnable() {
         super.onEnable();
 
         //Add all players on server to list (Only when reloading server to not to break things)
-        for(Player player : Bukkit.getOnlinePlayers()){
+        for (Player player : Bukkit.getOnlinePlayers()) {
             createGamePlayer(player);
         }
+    }
+
+    @Override
+    public void onDisable() {
+        for (Game game : games)
+            game.disable();
+
+
     }
 
     public List<GamePlayer> getGamePlayers() {
@@ -37,43 +45,43 @@ public class TheRun extends JavaPlugin {
         return games;
     }
 
-    public GamePlayer getGamePlayer(Player player){
-        for(GamePlayer gamePlayer : gamePlayers){
-            if(gamePlayer.getPlayer() == player)
+    public GamePlayer getGamePlayer(Player player) {
+        for (GamePlayer gamePlayer : gamePlayers) {
+            if (gamePlayer.getPlayer() == player)
                 return gamePlayer;
         }
         return null;
     }
 
-    public GamePlayer createGamePlayer(Player player){
+    public GamePlayer createGamePlayer(Player player) {
         GamePlayer gamePlayer = new GamePlayer(player);
         gamePlayers.add(gamePlayer);
         return gamePlayer;
     }
 
-    public List<GamePlayer> getPlayersFromGame(Game game){
+    public List<GamePlayer> getPlayersFromGame(Game game) {
         List<GamePlayer> currentGamePlayers = new ArrayList<>();
-        for(GamePlayer gamePlayer : gamePlayers){
-            if(gamePlayer.getGame() == game)
+        for (GamePlayer gamePlayer : gamePlayers) {
+            if (gamePlayer.getGame() == game)
                 currentGamePlayers.add(gamePlayer);
         }
         return currentGamePlayers;
     }
 
-    protected void joinGame(Player player, Game game){
+    protected void joinGame(Player player, Game game) {
         GamePlayer gamePlayer = getGamePlayer(player);
 
         PlayerGameJoinEvent playerGameJoinEvent = new PlayerGameJoinEvent(player, game);
 
         Bukkit.getPluginManager().callEvent(playerGameJoinEvent);
 
-        if(playerGameJoinEvent.isCancelled())
+        if (playerGameJoinEvent.isCancelled())
             return;
 
         gamePlayer.setGame(game);
     }
 
-    protected void quitGame(Player player, Game game){
+    protected void quitGame(Player player, Game game) {
         GamePlayer gamePlayer = getGamePlayer(player);
 
         PlayerGameQuitEvent playerGameQuitEvent = new PlayerGameQuitEvent(player, game);

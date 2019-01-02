@@ -1,7 +1,6 @@
 package me.tade.therun.event;
 
 import me.tade.therun.game.Game;
-import me.tade.therun.game.GameState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
@@ -22,16 +21,16 @@ public class PlayerGameJoinEvent extends Event implements Cancellable {
         this.game = game;
     }
 
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
     public Player getPlayer() {
         return player;
     }
 
     public Game getGame() {
         return game;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 
     @Override

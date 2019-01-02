@@ -33,13 +33,6 @@ public abstract class Game {
         gameManager = new GameManager(this);
     }
 
-    public void setGameState(GameState gameState) {
-        this.gameState = gameState;
-
-        //Call GameState update event for game
-        Bukkit.getPluginManager().callEvent(new GameStateChangeEvent(this, this.gameState));
-    }
-
     public String getName() {
         return name;
     }
@@ -56,8 +49,22 @@ public abstract class Game {
         return forceStart;
     }
 
+    public void setForceStart(boolean forceStart) {
+        this.forceStart = forceStart;
+
+        if (getGameState() == GameState.LOBBY)
+            setGameState(GameState.STARTING);
+    }
+
     public GameState getGameState() {
         return gameState;
+    }
+
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
+
+        //Call GameState update event for game
+        Bukkit.getPluginManager().callEvent(new GameStateChangeEvent(this, this.gameState));
     }
 
     public int getCountdown() {
@@ -70,7 +77,7 @@ public abstract class Game {
         shortCountdown(getCountdown());
     }
 
-    public void shortCountdown(int countdown){
+    public void shortCountdown(int countdown) {
         gameRunnable.setCountdown(countdown);
     }
 
@@ -94,6 +101,10 @@ public abstract class Game {
         return plugin;
     }
 
+    public void emergencyRestartGame() {
+        gameRunnable.prepareToRestartGame();
+    }
+
     public abstract void onTick();
 
     public abstract void startGame();
@@ -102,7 +113,7 @@ public abstract class Game {
 
     public abstract void restartGame();
 
-    public void disable(){
+    public void disable() {
         gameRunnable.cancel();
 
         HandlerList.unregisterAll(gameManager);
